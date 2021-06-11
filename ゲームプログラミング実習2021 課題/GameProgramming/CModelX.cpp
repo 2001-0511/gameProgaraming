@@ -205,14 +205,6 @@ void CMesh::Init(CModelX *model){
 			printf(" %2d ", mpVertexIndex[i + 1]);
 			printf(" %2d\n", mpVertexIndex[i + 2]);
 		}
-#ifdef _DEBUG
-		printf("%sn", mName);
-		printf("Diffuse:%f %f %f %fn", mDiffuse[0], mDiffuse[1], mDiffuse[2], mDiffuse[3]);
-		printf("Power:%fn", mPower);
-		printf("Specular:%f %f %fn", mSpecular[0], mSpecular[1], mSpecular[2]);
-		printf("Emissive:%f %f %fn", mEmissive[0], mEmissive[1], mEmissive[2]);
-#endif
-
 	}
 }
 
