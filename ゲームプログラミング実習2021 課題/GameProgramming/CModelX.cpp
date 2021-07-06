@@ -101,6 +101,30 @@ int CModelX::GetIntToken(){
 }
 
 
+/*
+SkipNode
+ノードを読み飛ばす
+*/
+void CModelX::SkipNode(){
+	//文字が終わったら終了
+	while (*mpPointer != '\0'){
+		GetToken();    //次の単語取得
+		//{が見つかったらループ終了
+		if (strchr(mToken, '{'))break;
+	}
+	int count = 1;
+	//文字が終わるか,カウントが0になったら終了
+	while (*mpPointer != '\0' && count>0){
+		GetToken();    //次の単語取得
+		//{を見つけるとカウントアップ
+		if (strchr(mToken, '{'))count++;
+		//}を見つけるとカウントダウン
+		else if (strchr(mToken, '}')) count--;
+
+
+	}
+
+}
 
 /*
 Init
@@ -112,6 +136,7 @@ void CMesh::Init(CModelX *model){
 		//名前の場合、次が{
 		model->GetToken();   //{
 	}
+	
 	
 	//頂点数の取得
 	mVertexNum = model->GetIntToken();
@@ -141,6 +166,7 @@ void CMesh::Init(CModelX *model){
 			break;
 		if (strcmp(model->mToken, "MeshNormals") == 0){
 			model->GetToken();    //{
+		
 			//法線データ数を取得
 			mNormalNum = model->GetIntToken();
 			//法線のデータを配列に取り込む
@@ -169,6 +195,8 @@ void CMesh::Init(CModelX *model){
 			delete[] pNormal;
 			model->GetToken();   //}
 		}
+		
+		
 		//MeshMaterialListの時
 		else if (strcmp(model->mToken, "MeshMaterialList") == 0){
 			model->GetToken(); // {
@@ -187,63 +215,39 @@ void CMesh::Init(CModelX *model){
 				if (strcmp(model->mToken, "Material") == 0){
 					mMaterial.push_back(new CMaterial(model));
 				}
+				
 			}
 			model->GetToken();      // } //END of MEshMaterialList
 		}
-		//SkinWeightsのとき
 		else if (strcmp(model->mToken, "SkinWeights") == 0){
-			//CSkinWeightsクラスのインスタンスを作成し,配列に追加
+			//CSkinWeightsクラスのインスタンスを作成し、配列に追加
 			mSkinWeights.push_back(new CSkinWeights(model));
 		}
 		else{
 			//以外のノードは読み飛ばし
 			model->SkipNode();
 		}
+
+		//printf("VertexNum:%d\n", mVertexNum);
+		//for (int i = 0; i < mVertexNum; i++){
+		//	printf("%10f", mpNormal[i].mX);
+		//	printf("%10f", mpNormal[i].mY);
+		//	printf("%10f\n", mpNormal[i].mZ);
+		//}
+		//printf("FaceNum:%d\n", mFaceNum);
+		//for (int i = 0; i < mFaceNum * 3; i += 3){
+		//	//model->GetToken();  //頂点読み飛ばし
+		//	printf("  %2d ", mpVertexIndex[i]);
+		//	printf(" %2d ", mpVertexIndex[i + 1]);
+		//	printf(" %2d\n", mpVertexIndex[i + 2]);
+		//}
 		
 
-		printf("VertexNum:%d\n", mVertexNum);
-		for (int i = 0; i < mVertexNum; i++){
-			printf("%10f", mpNormal[i].mX);
-			printf("%10f", mpNormal[i].mY);
-			printf("%10f\n", mpNormal[i].mZ);
-		}
-		printf("FaceNum:%d\n", mFaceNum);
-		for (int i = 0; i < mFaceNum * 3; i += 3){
-			//model->GetToken();  //頂点読み飛ばし
-			printf("  %2d ", mpVertexIndex[i]);
-			printf(" %2d ", mpVertexIndex[i + 1]);
-			printf(" %2d\n", mpVertexIndex[i + 2]);
-		}
-		
 	}
 }
 
 
 
-/*
-SkipNode
-ノードを読み飛ばす
-*/
-void CModelX::SkipNode(){
-	//文字が終わったら終了
-	while (*mpPointer != '\0'){
-		GetToken();    //次の単語取得
-		//{が見つかったらループ終了
-		if (strchr(mToken, '{'))break;
-	}
-	int count = 1;
-	//文字が終わるか,カウントが0になったら終了
-	while (*mpPointer != '\0' && count>0){
-		GetToken();    //次の単語取得
-		//{を見つけるとカウントアップ
-		if (strchr(mToken, '{'))count++;
-		//}を見つけるとカウントダウン
-		else if (strchr(mToken, '}')) count--;
-
-	
-	}
-
-}
 
 /*
 CModelXframe 
