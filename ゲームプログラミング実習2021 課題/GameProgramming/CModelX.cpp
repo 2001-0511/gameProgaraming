@@ -4,6 +4,7 @@
 #include <string.h>  //文字列関数のインクルード
 
 
+
 void CModelX::Load(char *file){
 	//
 	//ファイルサイズを取得する
@@ -40,8 +41,10 @@ void CModelX::Load(char *file){
 		if (strcmp(mToken, "Frame") == 0){
 			//フレームを作成する
 			new CModelXFrame(this);
-			
-			
+		}
+		//単語がAnimationSetの場合
+		else if (strcmp(mToken, "AnimationSet") == 0){
+			new CAnimationSet(this);
 		}
 	}
 	SAFE_DELETE_ARRAY(buf);  //確保した領域を開放する
@@ -353,6 +356,81 @@ CSkinWeights::CSkinWeights(CModelX *model)
 
 }
 
+/*
+CAnimationSet
+*/
+CAnimationSet::CAnimationSet(CModelX*model)
+:mpName(nullptr)
+{
+	model->mAnimationSet.push_back(this);
+	model->GetToken();    //Animation Name
+	//アニメーションセット名を退避
+	mpName = new char[strlen(model->mToken) + 1];
+	strcpy(mpName, model->mToken);
+	model->GetToken(); //{
+	while (*model->mpPointer != '\0'){
+		model->GetToken(); //} or Animation
+		if (strchr(model->mToken, '}'))break;
+		if (strcmp(model->mToken, "Animation") == 0){
+			//とりあえず読み飛ばし
+			model->SkipNode();
+		}
+	}
+#ifdef _DEBUG
+	printf("AnimationSet:%s\n", mpName);
+#endif
+}
+
+CAnimation::CAnimation(CModelX *model)
+:mpFrameName(0)
+, mFrameIndex(0)
+{
+	model->GetToken(); // { or Animation Name
+	if (strchr(model->mToken, '{')){
+		model->GetToken(); // {
+	}
+	else{
+		model->GetToken(); //{
+		model->GetToken(); //{
+	}
+	model->GetToken(); //FrameName
+	mpFrameName = new char[strlen(model->mToken) + 1];
+	strcpy(mpFrameName, model->mToken);
+	mFrameIndex =
+		model->FindFrame(model->mToken)->mIndex;
+	model->GetToken(); // }
+	while (*model->mpPointer != '\0'){
+		model->GetToken(); //} or AnimationKey
+		if (strchr(model->mToken, '}'))break;
+		if (strcmp(model->mToken, "AnimationKey") == 0){
+			//Animation要素読み込み
+			mAnimation.push_back(new CAnimation(model));
+
+		}
+	}
+#ifdef _DEBUG
+	printf("Animation:%s\n",mpFrameName);
+#endif
+}
+
+/*
+FIndFrame
+フレーム名に該当するフレームのアドレスを返す
+*/
+CModelXFrame* CModelX::FindFrame(char*name){
+	//イテレータの作成
+	std::vector<CModelXFrame*>::iterator itr;
+	//先頭から最後まで繰り返す
+	for (itr = mFrame.begin(); itr != mFrame.end(); itr++){
+		//名前が一致したか？
+		if (strcmp(name, (*itr)->mpName) == 0){
+			//一致したらそのアドレスを返す
+			return *itr;
+		}
+	}
+	//一致するフレーム無い場合はNULLを返す
+	return NULL;
+}
 
 /*
 GetFloatToken
