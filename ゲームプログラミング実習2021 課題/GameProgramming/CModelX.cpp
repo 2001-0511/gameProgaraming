@@ -372,8 +372,8 @@ CAnimationSet::CAnimationSet(CModelX*model)
 		model->GetToken(); //} or Animation
 		if (strchr(model->mToken, '}'))break;
 		if (strcmp(model->mToken, "Animation") == 0){
-			//‚Æ‚è‚ ‚¦‚¸“Ç‚Ý”ò‚Î‚µ
-			model->SkipNode();
+			//Animation—v‘f“Ç‚Ýž‚Ý
+			mAnimation.push_back(new CAnimation(model));
 		}
 	}
 #ifdef _DEBUG
@@ -403,8 +403,7 @@ CAnimation::CAnimation(CModelX *model)
 		model->GetToken(); //} or AnimationKey
 		if (strchr(model->mToken, '}'))break;
 		if (strcmp(model->mToken, "AnimationKey") == 0){
-			//Animation—v‘f“Ç‚Ýž‚Ý
-			mAnimation.push_back(new CAnimation(model));
+			model->SkipNode();
 
 		}
 	}
