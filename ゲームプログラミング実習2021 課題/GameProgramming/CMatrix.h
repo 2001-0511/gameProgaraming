@@ -38,6 +38,8 @@ public:
 	//*演算子のオーバーロード
 	//CMatrix * CMatrix の演算結果を返す
 	CMatrix operator*(const CMatrix &m);
+	//クオータニオン
+	CMatrix SetQuaternion(float x, float y, float z, float w);
 
 };
 #endif

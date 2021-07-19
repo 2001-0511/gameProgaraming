@@ -46,6 +46,19 @@ public:
 };
 
 /*
+CAnimationKey
+アニメーションキークラス
+*/
+
+class CAnimationKey{
+public:
+	//時間
+	float mTime;
+	//行列
+	CMatrix mMatrix;
+};
+
+/*
 CAnimation
 アニメーションクラス
 */
@@ -53,10 +66,13 @@ class CAnimation{
 public:
 	char *mpFrameName; //フレーム名
 	int mFrameIndex;   //フレーム番号
+	int mKeyNum;       //キー数(時間数)
+	CAnimationKey *mpKey;  //キーの配列
 
 	CAnimation(CModelX*model);
 	~CAnimation(){
 		SAFE_DELETE_ARRAY(mpFrameName);
+		SAFE_DELETE_ARRAY(mpKey);
 	}
 };
 
@@ -80,6 +96,8 @@ public:
 		}
 	}
 };
+
+
 
 //CMeshクラスの定義
 class CMesh{
