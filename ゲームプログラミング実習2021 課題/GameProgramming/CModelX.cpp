@@ -361,6 +361,9 @@ CAnimationSet
 */
 CAnimationSet::CAnimationSet(CModelX*model)
 :mpName(nullptr)
+, mTime(0)
+, mWeight(0)
+, mMaxTime(0)
 {
 	model->mAnimationSet.push_back(this);
 	model->GetToken();    //Animation Name
